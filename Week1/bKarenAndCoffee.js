@@ -24,52 +24,52 @@ function readLine() {
  * **/
 
 function main() {
+
     const line1 = readLine().trim();
     const countOfArrays = line1.split(" ");
+    const obj = {
+        nRecipes: parseInt(countOfArrays[0]),
+        kRepeat: parseInt(countOfArrays[1]),
+        qQuery: parseInt(countOfArrays[2])
+    };
 
-    const line2 = readLine().trim();
-    let arr = line2.split(" ");
-    let operations = []
-    for (let i = 0; i < parseInt(countOfArrays[1]); i++) {
+    let max = 0;
+    let recipes = [];
+    for (let i = 0; i < obj.nRecipes; i++) {
+        const line2 = readLine().trim();
+        let recipe = line2.split(" ");
+        max = parseInt(recipe[1]) > max ? parseInt(recipe[1]) : max;
+        recipes.push(recipe);
+    }
+    let queries = [];
+    for (let i = 0; i < obj.qQuery; i++) {
         const line3 = readLine().trim();
-        let opArray = line3.split(" ");
-        operations.push(opArray);
+        let query = line3.split(" ");
+        max = parseInt(query[1]) > max ? parseInt(query[1]) : max;
+        queries.push(query);
     }
 
-    let queries = []
-    for (let i = 0; i < parseInt(countOfArrays[2]); i++) {
-        let line4 = readLine().trim();
-        const quArray = line4.split(" ");
-        queries.push(quArray);
+    let arr = new Array(max + 1).fill(0);
+    for( let i = 0 ; i < recipes.length ; i++){
+        arr[parseInt(recipes[i][0])] += 1;
+        arr[parseInt(recipes[i][1])+1] += -1;
     }
 
-    let deployOp = new Array(operations.length + 1).fill(0)
-    for (let j = 0; j < queries.length; j++) {
-        deployOp[queries[j][0]-1] += 1
-        deployOp[queries[j][1]] += -1
+    for( let i = 1 ; i < arr.length ; i++){
+        arr[i] += arr[i - 1];
     }
 
-    for(let i = 1 ; i < deployOp.length ;i++ ){
-        deployOp[i] = deployOp[i] + deployOp[i-1]
+    let arr2 = new Array(max + 1).fill(0);
+    for( let i = 1 ; i < arr2.length ; i++){
+        if (arr[i] >= obj.kRepeat) {
+            arr2[i] = arr2[i - 1] + 1;
+        } else {
+            arr2[i] = arr2[i - 1];
+        }
     }
 
-
-    let arrValues = new Array(arr.length + 1).fill(0)
-    for (let j = 0; j < operations.length; j++) {
-        arrValues[operations[j][0]-1] += operations[j][2] * deployOp[j]
-        arrValues[operations[j][1]] += - operations[j][2] * deployOp[j]
+    for(let i = 0 ; i < queries.length ; i++){
+        console.log(arr2[parseInt(queries[i][1])] - arr2[parseInt(queries[i][0]) - 1  ] )
     }
 
-    for(let i = 1 ; i < arrValues.length ;i++ ){
-        arrValues[i] = arrValues[i] + arrValues[i-1]
-    }
-    for (let j = 0; j < arr.length; j++) {
-        arr[j] = parseInt(arr[j]) + arrValues[j]
-    }
-
-    let print = ""
-    for(let y = 0 ;y<arr.length;y++){
-        print += arr[y] +" "
-    }
-    console.log(print)
 }
